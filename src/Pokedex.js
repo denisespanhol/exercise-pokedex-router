@@ -1,7 +1,8 @@
 import React from 'react';
 import Pokemon from './Pokemon';
 import Button from './Button';
-import { Route } from 'react-router-dom';
+import PokemonDetails from './PokemonDetails';
+import { Route, Switch } from 'react-router-dom';
 import './pokedex.css';
 
 class Pokedex extends React.Component {
@@ -40,32 +41,39 @@ class Pokedex extends React.Component {
     const filteredPokemons = this.fetchFilteredPokemons();
     const pokemonTypes = this.fetchPokemonTypes();
     const pokemon = filteredPokemons[this.state.pokemonIndex];
+    const linkId = "/pokemon/";
 
     return (
-      <div className="pokedex">
-        <Pokemon pokemon={pokemon} />
-        <div className="pokedex-buttons-panel">
-          <Button
-            onClick={() => this.filterPokemons('all')}
-            className="filter-button">
-            All
-          </Button>
-          {pokemonTypes.map(type => (
+      <Switch>
+        <Route exact path="/">
+          <div className="pokedex">
+            <Pokemon pokemon={pokemon} />
+            <div className="pokedex-buttons-panel">
+              <Button
+                onClick={() => this.filterPokemons('all')}
+                className="filter-button">
+                All
+              </Button>
+              {pokemonTypes.map(type => (
+                <Button
+                  key={type}
+                  onClick={() => this.filterPokemons(type)}
+                  className="filter-button">
+                  {type}
+                </Button>
+              ))}
+            </div>
             <Button
-              key={type}
-              onClick={() => this.filterPokemons(type)}
-              className="filter-button">
-              {type}
+              className="pokedex-button"
+              onClick={() => this.nextPokemon(filteredPokemons.length)}
+              disabled={filteredPokemons.length <= 1}>
+              Próximo pokémon
             </Button>
-          ))}
-        </div>
-        <Button
-          className="pokedex-button"
-          onClick={() => this.nextPokemon(filteredPokemons.length)}
-          disabled={filteredPokemons.length <= 1}>
-          Próximo pokémon
-        </Button>
-      </div>
+          </div>
+        </Route>
+        <Route path={ linkId + pokemon.id } render={(props) => <PokemonDetails {...props} pokemon={ pokemon } />} />
+      </Switch>
+      
     );
   }
 }
